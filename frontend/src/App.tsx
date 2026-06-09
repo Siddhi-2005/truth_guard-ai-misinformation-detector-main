@@ -16,7 +16,9 @@ import {
 import './App.css';
 
 // Base API configuration
-const API_BASE_URL = 'http://localhost:8002';
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8002'
+  : '/api';
 
 interface EvidenceItem {
   title: string;

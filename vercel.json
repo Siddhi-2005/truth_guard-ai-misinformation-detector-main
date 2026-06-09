@@ -6,8 +6,11 @@
       "use": "@vercel/python"
     },
     {
-      "src": "truth_guard_ai/build/web/**",
-      "use": "@vercel/static"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
@@ -17,7 +20,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "truth_guard_ai/build/web/$1"
+      "dest": "/$1"
     }
   ]
 }

@@ -53,6 +53,7 @@ app.add_middleware(
 )
 
 @app.get("/")
+@app.get("/api")
 async def root():
     return {"message": "FactGuard Agent API is running"}
 
@@ -62,6 +63,7 @@ class VerifyRequest(BaseModel):
     language: str = "English"
 
 @app.post("/verify", response_model=FactGuardOutput)
+@app.post("/api/verify", response_model=FactGuardOutput)
 async def verify(request: VerifyRequest):
     try:
         # Construct the input for the agent
@@ -192,6 +194,7 @@ class ChatResponse(BaseModel):
     image_prompt: Optional[str] = None
 
 @app.post("/chat")
+@app.post("/api/chat")
 async def chat(request: ChatRequest):
     async def event_generator():
         try:
