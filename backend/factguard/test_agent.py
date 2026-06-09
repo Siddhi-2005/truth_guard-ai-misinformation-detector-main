@@ -5,7 +5,7 @@ import os
 # Add backend to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from backend.antigravity.agent import antigravity_agent
+from backend.factguard.agent import factguard_agent
 from google.adk.runners import InMemoryRunner
 from google.genai.types import Part, UserContent
 
@@ -13,7 +13,7 @@ async def main():
     claim = "Chlorine in swimming pools kills the coronavirus."
     prompt = f"Claim: {claim}\nImage Requested: False"
     print(f"Testing claim: {claim}")
-    runner = InMemoryRunner(agent=antigravity_agent)
+    runner = InMemoryRunner(agent=factguard_agent)
     session = await runner.session_service.create_session(
         app_name=runner.app_name, user_id="test_user"
     )

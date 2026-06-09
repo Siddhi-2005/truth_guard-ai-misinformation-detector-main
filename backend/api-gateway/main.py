@@ -67,12 +67,12 @@ async def health_check():
     return {"status": "healthy"}
 
 # Import routers
-from routers import verify, research, safety, truthguard
+from routers import verify, research, safety, factguard
 
 app.include_router(verify.router, prefix="/api/v1", tags=["verification"])
 app.include_router(research.router, prefix="/api/v1", tags=["research"])
 app.include_router(safety.router, prefix="/api/v1", tags=["safety"])
-app.include_router(truthguard.router, prefix="/api/v1", tags=["truthguard"])
+app.include_router(factguard.router, prefix="/api/v1", tags=["factguard"])
 
 if __name__ == "__main__":
     import uvicorn

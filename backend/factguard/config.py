@@ -22,11 +22,12 @@ os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
 
 
 @dataclass
-class AntigravityConfiguration:
-    """Configuration for Antigravity agent models and parameters."""
+class FactGuardConfiguration:
+    """Configuration for FactGuard agent models and parameters."""
 
-    model: str = "gemini-3-pro-preview"
-    max_search_iterations: int = 3
+    model: str = "gemini-2.5-flash-lite"
+    fallback_model: str = "gemini-2.0-flash-lite"
+    max_search_iterations: int = 1
 
 
-config = AntigravityConfiguration()
+config = FactGuardConfiguration()

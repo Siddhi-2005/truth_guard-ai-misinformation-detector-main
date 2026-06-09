@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from .agent import antigravity_agent, antigravity_chat_agent, AntigravityOutput
+from .agent import factguard_agent, factguard_chat_agent, FactGuardOutput
 from google.adk.runners import InMemoryRunner
 from google.genai.types import Part, UserContent
 import json
+import asyncio
 from typing import Optional
 
 import sys
@@ -22,8 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # Note: We use try-except to avoid crashing if dependencies are missing for other agents
 agents = {}
 
-# 1. Antigravity (TruthGuard)
-agents["TruthGuard"] = antigravity_chat_agent
+# 1. FactGuard
+agents["FactGuard"] = factguard_chat_agent
 
 # 2. Deep Search
 try:
@@ -40,7 +41,7 @@ except ImportError as e:
     print(f"Could not import LLM Auditor agent: {e}")
 
 
-app = FastAPI(title="Antigravity Agent API")
+app = FastAPI(title="FactGuard Agent API")
 
 
 app.add_middleware(
@@ -53,35 +54,49 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Antigravity Agent API is running"}
+    return {"message": "FactGuard Agent API is running"}
 
 class VerifyRequest(BaseModel):
     claim: str
     image_requested: bool = False
     language: str = "English"
 
-@app.post("/verify", response_model=AntigravityOutput)
+@app.post("/verify", response_model=FactGuardOutput)
 async def verify(request: VerifyRequest):
     try:
         # Construct the input for the agent
         prompt = f"Claim: {request.claim}\nImage Requested: {request.image_requested}\nLanguage: {request.language}"
         
-        runner = InMemoryRunner(agent=antigravity_agent)
-        session = await runner.session_service.create_session(
-            app_name=runner.app_name, user_id="api_user"
-        )
         content = UserContent(parts=[Part(text=prompt)])
         
+        # Retry logic with exponential backoff for 503/429 errors
+        max_retries = 3
         final_text = ""
-        async for event in runner.run_async(
-            user_id=session.user_id,
-            session_id=session.id,
-            new_message=content,
-        ):
-            if event.content and event.content.parts:
-                for part in event.content.parts:
-                    if part.text:
-                        final_text += part.text
+        for attempt in range(max_retries):
+            try:
+                runner = InMemoryRunner(agent=factguard_agent)
+                session = await runner.session_service.create_session(
+                    app_name=runner.app_name, user_id="api_user"
+                )
+                final_text = ""
+                async for event in runner.run_async(
+                    user_id=session.user_id,
+                    session_id=session.id,
+                    new_message=content,
+                ):
+                    if event.content and event.content.parts:
+                        for part in event.content.parts:
+                            if part.text:
+                                final_text += part.text
+                break  # Success, exit retry loop
+            except Exception as retry_err:
+                err_str = str(retry_err)
+                if ("503" in err_str or "429" in err_str or "UNAVAILABLE" in err_str or "RESOURCE_EXHAUSTED" in err_str) and attempt < max_retries - 1:
+                    wait_time = 10 * (2 ** attempt)  # 10s, 20s, 40s
+                    print(f"[Retry {attempt+1}/{max_retries}] Gemini API temporarily unavailable. Waiting {wait_time}s...")
+                    await asyncio.sleep(wait_time)
+                else:
+                    raise  # Re-raise on final attempt or non-retryable errors
         
         # Parse the JSON output
         # The agent is instructed to output JSON.
@@ -100,7 +115,7 @@ async def verify(request: VerifyRequest):
 
         try:
             data = json.loads(cleaned_text)
-            output = AntigravityOutput(**data)
+            output = FactGuardOutput(**data)
 
             # Image Generation (Nano Banana / Gemini 2.5 Flash Image)
             if output.image_generation and output.image_generation.image_prompt:
@@ -133,7 +148,7 @@ async def verify(request: VerifyRequest):
             if start != -1 and end != -1:
                 json_str = cleaned_text[start:end+1]
                 data = json.loads(json_str)
-                output = AntigravityOutput(**data)
+                output = FactGuardOutput(**data)
                 
                 # Image Generation (Nano Banana / Gemini 2.5 Flash Image) - Copy of logic
                 if output.image_generation and output.image_generation.image_prompt:
@@ -169,7 +184,7 @@ class ChatRequest(BaseModel):
     message: str
     session_id: str = "default_session"
     language: str = "English"
-    agent_name: str = "TruthGuard"
+    agent_name: str = "FactGuard"
 
 class ChatResponse(BaseModel):
     response: str
@@ -180,7 +195,7 @@ class ChatResponse(BaseModel):
 async def chat(request: ChatRequest):
     async def event_generator():
         try:
-            selected_agent = agents.get(request.agent_name, antigravity_chat_agent)
+            selected_agent = agents.get(request.agent_name, factguard_chat_agent)
             runner = InMemoryRunner(agent=selected_agent)
             session = await runner.session_service.create_session(
                 app_name=runner.app_name, user_id="api_user", session_id=request.session_id
@@ -194,7 +209,7 @@ async def chat(request: ChatRequest):
                 # LLM Auditor expects a claim or text to audit
                 prompt_text = f"Audit this: {request.message}\n(Language: {request.language})"
             else:
-                # TruthGuard
+                # FactGuard
                 prompt_text = f"{request.message}\n(Respond in {request.language})"
 
             content = UserContent(parts=[Part(text=prompt_text)])
@@ -208,6 +223,11 @@ async def chat(request: ChatRequest):
                 session_id=session.id,
                 new_message=content,
             ):
+                if event.content and event.content.parts:
+                    for part in event.content.parts:
+                        if part.text:
+                            final_text += part.text
+
                 # Log tool use or thoughts if available
                 # Inspect event for specific agent activities
                 log_message = "Processing..."
@@ -240,7 +260,7 @@ async def chat(request: ChatRequest):
                      elif "google_search" in event_str:
                         log_message = "Verifying Claims..."
                 else:
-                    # TruthGuard
+                    # FactGuard
                     if "google_search" in event_str:
                         log_message = "Verifying with Google Search..."
                     elif "model_call" in event_str:

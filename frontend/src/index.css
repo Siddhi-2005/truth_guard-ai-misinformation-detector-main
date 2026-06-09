@@ -1,0 +1,98 @@
+:root {
+  /* Premium Light Theme Colors */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  
+  --border-color: #E2E8F0;
+  
+  --primary-color: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  
+  /* Verdict Color Schemes (Soft, elegant light theme variations) */
+  --color-true: #059669;
+  --color-true-bg: #ECFDF5;
+  --color-true-border: #A7F3D0;
+  
+  --color-false: #DC2626;
+  --color-false-bg: #FEF2F2;
+  --color-false-border: #FCA5A5;
+  
+  --color-misleading: #D97706;
+  --color-misleading-bg: #FFFBEB;
+  --color-misleading-border: #FDE68A;
+  
+  --color-unverified: #4B5563;
+  --color-unverified-bg: #F9FAFB;
+  --color-unverified-border: #E5E7EB;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  --gradient-btn: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  --gradient-true: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --gradient-false: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  --gradient-misleading: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  
+  /* Typography */
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Advanced Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(148, 163, 184, 0.08), 0 4px 6px -2px rgba(148, 163, 184, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(148, 163, 184, 0.1), 0 10px 10px -5px rgba(148, 163, 184, 0.04);
+  --shadow-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  
+  /* Layout & Spacing */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}

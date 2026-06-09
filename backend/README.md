@@ -1,10 +1,10 @@
-# TruthGuard AI - Backend Setup Guide
+# FactGuard AI - Backend Setup Guide
 
 ## Phase 1: Local Setup (Completed ✓)
 
 ### What We've Done:
 1. ✅ Created `backend/` directory structure
-2. ✅ Copied LLM Auditor agent
+2. ✅ Copied FactGuard agent
 3. ✅ Copied Deep Search agent
 4. ✅ Copied Safety Plugins agent
 5. ✅ Created FastAPI API Gateway
@@ -12,7 +12,7 @@
 ### Directory Structure:
 ```
 backend/
-├── llm-auditor/           # Verification Agent
+├── factguard/             # Verification Agent
 ├── deep-search/           # Research Agent  
 ├── safety-plugins/        # Content Filter
 └── api-gateway/           # FastAPI Gateway
@@ -31,9 +31,9 @@ backend/
 
 Each agent needs a `.env` file. Copy the `.env.example` to `.env` in each directory:
 
-**LLM Auditor** (`backend/llm-auditor/.env`):
+**FactGuard** (`backend/factguard/.env`):
 ```bash
-cp backend/llm-auditor/.env.example backend/llm-auditor/.env
+cp backend/factguard/.env.example backend/factguard/.env
 ```
 Then edit and add:
 ```bash
@@ -62,7 +62,7 @@ cp backend/api-gateway/.env.example backend/api-gateway/.env
 
 **For each agent** (run from agent directory):
 ```bash
-cd backend/llm-auditor
+cd backend/factguard
 poetry install
 
 cd ../deep-search
@@ -80,9 +80,9 @@ pip install -r requirements.txt
 
 ### 3. Test Agents Locally
 
-**Test LLM Auditor**:
+**Test FactGuard**:
 ```bash
-cd backend/llm-auditor
+cd backend/factguard
 adk web
 ```
 Open browser to test the agent.

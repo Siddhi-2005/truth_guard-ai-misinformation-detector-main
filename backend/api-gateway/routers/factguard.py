@@ -37,7 +37,7 @@ class ImageGeneration(BaseModel):
     height: int
     style: str
 
-class AntigravityOutput(BaseModel):
+class FactGuardOutput(BaseModel):
     claim_id: str
     timestamp_utc: str
     input: InputData
@@ -56,22 +56,22 @@ class VerifyRequest(BaseModel):
     claim: str
     image_requested: bool = False
 
-ANTIGRAVITY_URL = os.getenv("ANTIGRAVITY_URL", "http://localhost:8002")
+FACTGUARD_URL = os.getenv("FACTGUARD_URL", "http://localhost:8002")
 
-@router.post("/antigravity/verify", response_model=AntigravityOutput)
+@router.post("/factguard/verify", response_model=FactGuardOutput)
 async def verify_claim(request: VerifyRequest):
     """
-    Verify a claim using the Antigravity agent.
+    Verify a claim using the FactGuard agent.
     """
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
-                f"{ANTIGRAVITY_URL}/verify",
+                f"{FACTGUARD_URL}/verify",
                 json=request.dict()
             )
             response.raise_for_status()
             return response.json()
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=500, detail=f"Antigravity service error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"FactGuard service error: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
