@@ -15,6 +15,10 @@
   ],
   "routes": [
     {
+      "src": "/api",
+      "dest": "backend/factguard/main.py"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "backend/factguard/main.py"
     },
