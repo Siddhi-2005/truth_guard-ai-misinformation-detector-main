@@ -18,7 +18,7 @@ except Exception:
     pass # Local development without gcloud auth
 
 os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
+os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "False")
 
 
 @dataclass
