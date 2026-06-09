@@ -1,5 +1,5 @@
 """
-TruthGuard AI - API Gateway
+FactGuard AI - API Gateway
 Unified REST API for Python ADK agents
 """
 from fastapi import FastAPI, HTTPException
@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(
-    title="TruthGuard AI API Gateway",
+    title="FactGuard AI API Gateway",
     description="Unified API for misinformation detection agents",
     version="1.0.0"
 )
@@ -57,7 +57,7 @@ class SafetyResult(BaseModel):
 @app.get("/")
 async def root():
     return {
-        "service": "TruthGuard AI API Gateway",
+        "service": "FactGuard AI API Gateway",
         "version": "1.0.0",
         "status": "operational"
     }
