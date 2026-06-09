@@ -1,49 +1,45 @@
 # Deployment Instructions - Vercel
 
-This project is configured for deployment on Vercel using a hybrid approach:
-- **Backend**: Python (FastAPI) running as Serverless Functions.
-- **Frontend**: Flutter Web (Static Assets).
+This project is configured for seamless deployment on Vercel as a monorepo containing:
+- **Backend**: Python FastAPI service running as Vercel Serverless Functions.
+- **Frontend**: React (Vite/TypeScript) SPA built and hosted as static assets.
 
-## Prerequisites
-1.  **Vercel Account**: Sign up at [vercel.com](https://vercel.com).
-2.  **Vercel CLI** (Optional but recommended): `npm i -g vercel`.
-3.  **Flutter Installed**: To build the web app locally.
+The repository is configured with a root-level `vercel.json` that automatically orchestrates both builds and routes incoming traffic:
+* `/api/*` routes are handled by the FastAPI serverless functions (`backend/factguard/main.py`).
+* All other routes are handled by the React static build (`frontend/dist/`).
 
-## Steps
+---
 
-### 1. Build the Flutter Web App
-Since Vercel doesn't support Flutter builds natively, you must build the web assets locally and commit them (or deploy via CLI).
+## 🚀 Deployment Steps (via GitHub Integration)
 
-```bash
-cd truth_guard_ai
-flutter build web --release
-```
+This is the recommended, zero-setup approach to deploy the application.
 
-### 2. Prepare for Deployment
-Ensure the `truth_guard_ai/build/web` folder is **NOT** ignored by Git.
-- Check `.gitignore` files.
-- If `build/` is ignored, you can force add it:
-  ```bash
-  git add -f truth_guard_ai/build/web
-  ```
+### Step 1: Add Environment Variables in Vercel
+Since the backend uses Google's Gemini models, you must provide your Gemini API key.
+1. Go to your **Vercel Dashboard** and click **Add New...** -> **Project**.
+2. Import your repository: `truth_guard-ai-misinformation-detector-main`.
+3. In the **Configure Project** section, expand **Environment Variables**.
+4. Add the following variable:
+   * **Name**: `GOOGLE_API_KEY`
+   * **Value**: *[Your Gemini API Key]*
+5. Expand **Build and Development Settings**:
+   * **Framework Preset**: Keep as **Other** or **Vite**.
+   * **Root Directory**: Keep as `./` (root).
+   * **Build Command**: Keep empty (or default). Vercel reads `vercel.json` to build the frontend and backend automatically.
 
-### 3. Deploy
-#### Option A: Connect to GitHub (Recommended)
-1.  Push your code (including `truth_guard_ai/build/web`) to a GitHub repository.
-2.  Go to Vercel Dashboard -> "Add New..." -> "Project".
-3.  Import your repository.
-4.  **Important**:
-    - **Framework Preset**: Select "Other".
-    - **Root Directory**: Keep as `./` (root).
-    - **Build Command**: Leave empty (or `echo "Skipping build"`).
-    - **Output Directory**: Leave default (Vercel will use `vercel.json`).
-5.  Click **Deploy**.
+### Step 2: Deploy
+1. Click the **Deploy** button.
+2. Vercel will install dependencies, compile the React frontend, set up the Python FastAPI serverless functions, and publish your site.
 
-#### Option B: Vercel CLI
-Run the following command from the root directory:
-```bash
-vercel deploy
-```
+---
 
-## Environment Variables
-If you use API keys (like `GOOGLE_API_KEY`), add them in the Vercel Project Settings -> **Environment Variables**.
+## 🛠️ Deploying via Vercel CLI (Alternative)
+
+If you have Vercel CLI installed locally and authenticated:
+
+1. Run the following command from the root directory:
+   ```bash
+   npx vercel --prod
+   ```
+2. Follow the interactive prompts to link the project and deploy it.
+3. Make sure to set your `GOOGLE_API_KEY` in the Vercel Dashboard settings under the deployed project.
